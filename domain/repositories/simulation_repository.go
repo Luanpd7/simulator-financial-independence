@@ -1,6 +1,6 @@
 package repositories
 
-import "simulator-api/internal/domain/entities"
+import "simulator-api/domain/entities"
 
 type SimulationRepository interface {
     Calculate(

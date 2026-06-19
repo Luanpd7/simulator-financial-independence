@@ -2,9 +2,8 @@ package main
 
 import (
 	"log"
-	"simulator-api/internal/database"
-	"simulator-api/internal/routes"
-
+	"simulator-api/data/database"
+	"simulator-api/routes"
 	"github.com/gin-gonic/gin"
 )
 

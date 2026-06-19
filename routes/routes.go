@@ -1,7 +1,8 @@
 package routes
 
+
 import (
-	"simulator-api/internal/handlers"
+	"simulator-api/handlers"
 	"github.com/gin-gonic/gin"
 )
 

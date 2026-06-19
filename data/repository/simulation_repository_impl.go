@@ -3,7 +3,7 @@ package repository
 import (
 	"log"
 	"time"
-	"simulator-api/internal/database"
+	"simulator-api/data/database"
 )
 
 type SimulationRecord struct {

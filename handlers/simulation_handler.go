@@ -3,7 +3,7 @@ package handlers
 import (
 	"log"
 	"simulator-api/data/repository"
-	"simulator-api/internal/domain/entities"
+	"simulator-api/domain/entities"
 	"github.com/gin-gonic/gin"
 )
 
