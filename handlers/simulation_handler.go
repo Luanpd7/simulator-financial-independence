@@ -17,7 +17,7 @@ func CalculateSimulation(c *gin.Context) {
 	}
 
 
-	// Salvar no banco
+	// Salvar no   banco
 	record := repository.SimulationRecord{
 		CurrentAssets:       input.CurrentAssets,
 		MonthlyContribution: input.MonthlyContribution,
