@@ -1,38 +1,33 @@
 package handlers
 
 import (
-	"log"
-	"simulator-api/data/repository"
+	"net/http"
 	"simulator-api/domain/entities"
+	"simulator-api/domain/usecase"
 	"github.com/gin-gonic/gin"
 )
 
-func CalculateSimulation(c *gin.Context) {
-	
+// SimulationHandler handles HTTP requests and delegates to usecases.
+type SimulationHandler struct {
+	uc *usecase.SimulationUseCase
+}
 
+func NewSimulationHandler(uc *usecase.SimulationUseCase) *SimulationHandler {
+	return &SimulationHandler{uc: uc}
+}
+
+func (h *SimulationHandler) CalculateSimulation(c *gin.Context) {
 	var input entities.FinancialIndependence
 	if err := c.BindJSON(&input); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
 		return
 	}
 
-
-	// Salvar no   banco
-	record := repository.SimulationRecord{
-		CurrentAssets:       input.CurrentAssets,
-		MonthlyContribution: input.MonthlyContribution,
-		AnnualPercentage:    input.AnnualPercentage,
-		CurrentAge:          input.CurrentAge,
-		RetirementAge:       input.RetirementAge,
-		TimeInYears:         input.TimeInYears,
-		Inflation:           input.Inflation,
+	result, err := h.uc.SaveFinanceIndependence(input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to process simulation"})
+		return
 	}
 
-	if err := repository.SaveSimulation(record); err != nil {
-		log.Printf("⚠️  Erro ao salvar simulação no banco: %v\n", err)
-	}
-
-	c.JSON(200, gin.H{
-		"savedAt":           record.CreatedAt,
-	})
+	c.JSON(http.StatusOK, gin.H{"result": result})
 }

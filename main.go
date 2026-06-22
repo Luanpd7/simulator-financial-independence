@@ -3,8 +3,12 @@ package main
 import (
 	"log"
 	"simulator-api/data/database"
+	datarepo "simulator-api/data/repository"
+	"simulator-api/domain/usecase"
+	"simulator-api/handlers"
 	"simulator-api/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -14,9 +18,14 @@ func main() {
 	}
 	defer database.Close()
 
-	router := gin.Default()
+	// Dependency injection
+	repo := datarepo.NewSimulationRepositoryImpl()
+	uc := usecase.NewSimulationUseCase(repo)
+	handler := handlers.NewSimulationHandler(uc)
 
-	routes.RegisterRoutes(router)
+	router := gin.Default()
+	router.Use(cors.Default())
+	routes.RegisterRoutes(router, handler)
 
 	router.Run(":8080")
 }
