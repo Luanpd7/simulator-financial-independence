@@ -29,5 +29,5 @@ func (h *SimulationHandler) CalculateSimulation(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"result": result})
+	c.JSON(http.StatusOK, result)
 }

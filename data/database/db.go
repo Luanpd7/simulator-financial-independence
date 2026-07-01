@@ -25,7 +25,7 @@ func Init(dbPath string) error {
 		return err
 	}
 
-	log.Println("✅ Banco de dados inicializado com sucesso")
+
 	return nil
 }
 

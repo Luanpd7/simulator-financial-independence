@@ -12,10 +12,12 @@ import (
 )
 
 func main() {
+
 	// Inicializar banco de dados
 	if err := database.Init("simulator.db"); err != nil {
 		log.Fatalf("❌ Erro ao inicializar banco de dados: %v\n", err)
 	}
+
 	defer database.Close()
 
 	// Dependency injection
@@ -26,6 +28,6 @@ func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	routes.RegisterRoutes(router, handler)
-
 	router.Run(":8080")
+	
 }

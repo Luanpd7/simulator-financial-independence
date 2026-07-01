@@ -1,11 +1,11 @@
 package usecase
 
 import (
+	"fmt"
 	"math"
-	"time"
-
 	"simulator-api/domain/entities"
 	domainRepo "simulator-api/domain/repositories"
+	"time"
 )
 
 // SimulationUseCase contains business rules for financial independence simulation.
@@ -19,41 +19,40 @@ func NewSimulationUseCase(repo domainRepo.SimulationRepository) *SimulationUseCa
 
 // SaveFinanceIndependence executes the simulation (business rules) and persists the record.
 func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialIndependence) (entities.SimulationResult, error) {
+
 	// Determine years to retirement
 	var years int64
-	if input.TimeInYears > 0 {
-		years = input.TimeInYears
-	} else {
-		years = input.RetirementAge - input.CurrentAge
-		if years < 0 {
-			years = 0
-		}
-	}
+	years = calculeYearsToRetirement(input)
 
-	months := float64(years * 12)
-	monthlyRate := (input.AnnualPercentage / 100.0) / 12.0
-	var finalAmount float64
-    
-	if monthlyRate != 0 {
-		finalAmount = input.CurrentAssets * math.Pow(1+monthlyRate, months)
-		fvAnnuity := input.MonthlyContribution * ((math.Pow(1+monthlyRate, months) - 1) / monthlyRate)
-		finalAmount += fvAnnuity
-	} else {
-		finalAmount = input.CurrentAssets + input.MonthlyContribution*months
-	}
-    
-	inflationAdj := finalAmount / math.Pow(1+(input.Inflation/100.0), float64(years))
-	totalContributed := input.CurrentAssets + input.MonthlyContribution*months
-	totalInterest := finalAmount - totalContributed
-      
+	fmt.Print("input.CurrentAssets-", input.CurrentAssets)
+	fmt.Print("input.MonthlyContribution-", input.MonthlyContribution)
+
+	/// Calculate total contributed and total interest earned
+	totalContributed := resultTotalContributed(input, years)
+
+	/// Calculate final amount using the finalAmount function
+	finalAmount := finalAmount(input, years)
+
+	// Calculate inflation adjusted final amount
+	inflationAdj := adjustForInflation(finalAmount, input.Inflation, years)
+
+	// Calculate total interest earned
+	totalInterestEarned := resultTotalEarnings(finalAmount, totalContributed)
+
+	// Calculate annual real interest rate
+	annualRealInterest := annualRealInterest(input.AnnualPercentage, input.Inflation)
+
+	// Calculate month real interest rates
+	monthRealInterest := monthRealInterest(annualRealInterest)
+
 	result := entities.SimulationResult{
 		FinalAmount:             finalAmount,
 		InflationAdjustedAmount: inflationAdj,
 		YearsToRetirement:       years,
-		RealRateYear:            input.AnnualPercentage - input.Inflation,
-		RealRateMonth:           monthlyRate - (input.Inflation/100.0)/12.0,
+		RealRateYear:            annualRealInterest,
+		RealRateMonth:           monthRealInterest,
 		TotalContributed:        totalContributed,
-		TotalInterestEarned:     totalInterest,
+		TotalInterestEarned:     totalInterestEarned,
 	}
 
 	// Build record to persist
@@ -82,4 +81,89 @@ func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialInd
 	}
 
 	return result, nil
+}
+
+func finalAmount(input entities.FinancialIndependence, years int64) float64 {
+	monthlyRate := annualToMonthlyRate(input.AnnualPercentage)
+	months := totalMonths(years)
+
+	
+	if monthlyRate == 0 {
+		return input.CurrentAssets + input.MonthlyContribution*months
+	}
+
+	growthFactor := math.Pow(1+monthlyRate, months)
+
+	currentAssetsValue := input.CurrentAssets * growthFactor
+
+	contributionsValue := input.MonthlyContribution *
+		((growthFactor - 1) / monthlyRate)
+
+	return currentAssetsValue + contributionsValue
+}
+
+func annualToMonthlyRate(annualRate float64) float64 {
+	const percent = 100.0
+
+	annualRateDecimal := annualRate / percent
+	return math.Pow(1+annualRateDecimal, 1.0/12.0) - 1
+}
+
+func adjustForInflation(value float64, inflationAnnual float64, years int64) float64 {
+	return value / math.Pow(1+inflationAnnual/100.0, float64(years))
+}
+
+func calculeYearsToRetirement(input entities.FinancialIndependence) int64 {
+	var years int64
+	if input.TimeInYears > 0 {
+		years = input.TimeInYears
+	} else {
+		years = input.RetirementAge - input.CurrentAge
+		if years < 0 {
+			years = 0
+		}
+	}
+	return years
+}
+
+func resultTotalEarnings(finalAmount float64, totalContributed float64) float64 {
+	return finalAmount - totalContributed
+}
+
+func resultTotalContributed(input entities.FinancialIndependence, years int64) float64 {
+	months := totalMonths(years)
+	return input.CurrentAssets + input.MonthlyContribution*months
+}
+
+func totalMonths(year int64) float64 {
+	return float64(year * 12)
+}
+
+func returnRateMonth(annualRate float64) float64 {
+	const percent = 100.0
+
+	annualRateDecimal := annualRate / percent
+	monthlyRate := math.Pow(1+annualRateDecimal, 1.0/12.0) - 1
+
+	return monthlyRate
+}
+
+func annualRealInterest(annualInterest float64, inflation float64) float64 {
+	const percent = 100.0
+
+	annualRate := annualInterest / percent
+	inflationRate := inflation / percent
+
+	realRate := (1+annualRate)/(1+inflationRate) - 1
+
+	return realRate * percent
+}
+
+func monthRealInterest(annualRealInterest float64) float64 {
+	const percent = 100.0
+
+	annualRate := annualRealInterest / percent
+	monthlyRate := math.Pow(1+annualRate, 1.0/12.0) - 1
+
+	return monthlyRate * percent
 }
