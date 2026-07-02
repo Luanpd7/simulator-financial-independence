@@ -21,4 +21,6 @@ type SimulationResult struct {
 
 	//Quanto rendeu no total
 	TotalInterestEarned float64 `json:"totalInterestEarned"`
+
+	Evolutions []EvolutionAssets `json:"evolutions"`
 }

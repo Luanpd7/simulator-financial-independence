@@ -45,6 +45,9 @@ func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialInd
 	// Calculate month real interest rates
 	monthRealInterest := monthRealInterest(annualRealInterest)
 
+	// Return evolution assets for each year
+	evolutions := evolutionAssets(input, years)
+
 	result := entities.SimulationResult{
 		FinalAmount:             finalAmount,
 		InflationAdjustedAmount: inflationAdj,
@@ -53,6 +56,7 @@ func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialInd
 		RealRateMonth:           monthRealInterest,
 		TotalContributed:        totalContributed,
 		TotalInterestEarned:     totalInterestEarned,
+		Evolutions:              evolutions,
 	}
 
 	// Build record to persist
@@ -167,3 +171,23 @@ func monthRealInterest(annualRealInterest float64) float64 {
 
 	return monthlyRate * percent
 }
+
+
+func evolutionAssets(input entities.FinancialIndependence, years int64) []entities.EvolutionAssets {
+	evolutions := make([]entities.EvolutionAssets, 0, years)
+
+	for year := int64(1); year <= years; year++ {
+		evolutions = append(evolutions, entities.EvolutionAssets{
+			Year:               int(year),
+			Age:                int(input.CurrentAge) + int(year),
+			FinalAssets:        finalAmount(input, year),
+			InflationAdjusted:  adjustForInflation(
+				finalAmount(input, year),
+				input.Inflation,
+				year,
+			),
+		})
+	}
+
+	return evolutions
+	}
