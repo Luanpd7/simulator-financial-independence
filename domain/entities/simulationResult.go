@@ -1,7 +1,7 @@
 package entities
 
 type SimulationResult struct {
-    //Patrimônio final
+	//Patrimônio final
 	FinalAmount float64 `json:"finalAmount"`
 
 	//Patrimônio corrigido pela inflação

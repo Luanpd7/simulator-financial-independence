@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"fmt"
 	"simulator-api/data/database"
 	datarepo "simulator-api/data/repository"
 	"simulator-api/domain/usecase"
@@ -17,6 +18,22 @@ func main() {
 	if err := database.Init("simulator.db"); err != nil {
 		log.Fatalf("❌ Erro ao inicializar banco de dados: %v\n", err)
 	}
+
+
+
+	
+    var ponteiroValue *int
+
+	value := 1
+
+	ponteiroValue = &value
+
+
+
+	fmt.Println("Value:", value) 
+	fmt.Println("Ponteiro:", ponteiroValue) 
+	fmt.Println("Usando o valor daquele ponteiro:", *ponteiroValue) 
+
 
 	defer database.Close()
 

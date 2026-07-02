@@ -18,7 +18,7 @@ func NewSimulationUseCase(repo domainRepo.SimulationRepository) *SimulationUseCa
 }
 
 // SaveFinanceIndependence executes the simulation (business rules) and persists the record.
-func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialIndependence) (entities.SimulationResult, error) {
+func (uc *SimulationUseCase) SaveFinanceIndependence(input *entities.FinancialIndependence) (entities.SimulationResult, error) {
 
 	// Determine years to retirement
 	var years int64
@@ -87,7 +87,7 @@ func (uc *SimulationUseCase) SaveFinanceIndependence(input entities.FinancialInd
 	return result, nil
 }
 
-func finalAmount(input entities.FinancialIndependence, years int64) float64 {
+func finalAmount(input *entities.FinancialIndependence, years int64) float64 {
 	monthlyRate := annualToMonthlyRate(input.AnnualPercentage)
 	months := totalMonths(years)
 
@@ -117,7 +117,7 @@ func adjustForInflation(value float64, inflationAnnual float64, years int64) flo
 	return value / math.Pow(1+inflationAnnual/100.0, float64(years))
 }
 
-func calculeYearsToRetirement(input entities.FinancialIndependence) int64 {
+func calculeYearsToRetirement(input *entities.FinancialIndependence) int64 {
 	var years int64
 	if input.TimeInYears > 0 {
 		years = input.TimeInYears
@@ -134,7 +134,7 @@ func resultTotalEarnings(finalAmount float64, totalContributed float64) float64 
 	return finalAmount - totalContributed
 }
 
-func resultTotalContributed(input entities.FinancialIndependence, years int64) float64 {
+func resultTotalContributed(input *entities.FinancialIndependence, years int64) float64 {
 	months := totalMonths(years)
 	return input.CurrentAssets + input.MonthlyContribution*months
 }
@@ -173,7 +173,7 @@ func monthRealInterest(annualRealInterest float64) float64 {
 }
 
 
-func evolutionAssets(input entities.FinancialIndependence, years int64) []entities.EvolutionAssets {
+func evolutionAssets(input *entities.FinancialIndependence, years int64) []entities.EvolutionAssets {
 	evolutions := make([]entities.EvolutionAssets, 0, years)
 
 	for year := int64(1); year <= years; year++ {

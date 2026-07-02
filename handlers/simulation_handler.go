@@ -23,7 +23,7 @@ func (h *SimulationHandler) CalculateSimulation(c *gin.Context) {
 		return
 	}
 
-	result, err := h.uc.SaveFinanceIndependence(input)
+	result, err := h.uc.SaveFinanceIndependence(&input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to process simulation"})
 		return
