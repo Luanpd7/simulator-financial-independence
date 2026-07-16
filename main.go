@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"simulator-api/data/database"
@@ -8,16 +11,20 @@ import (
 	"simulator-api/domain/usecase"
 	"simulator-api/handlers"
 	"simulator-api/routes"
-	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors"
+
 )
 
 func main() {
 
-	// Inicializar banco de dados
-	if err := database.Init("simulator.db"); err != nil {
-		log.Fatalf("❌ Erro ao inicializar banco de dados: %v\n", err)
+	// Carrega variáveis de ambiente do arquivo .env antes de iniciar a conexão com o PostgreSQL
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Erro ao carregar .env: %v", err)
 	}
+
+    if err := database.Init(); err != nil {
+        log.Fatalf("Erro ao conectar ao banco: %v", err)
+    }
+
 	defer database.Close()
 
 	// Dependency injection
@@ -41,6 +48,3 @@ func main() {
 		log.Fatalf("Erro ao iniciar servidor: %v", err)
 	}
 }
-
-
-

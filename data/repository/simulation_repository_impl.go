@@ -2,6 +2,7 @@ package repository
 
 import (
 	"log"
+	"fmt"
 	"simulator-api/data/database"
 	"simulator-api/domain/entities"
 )
@@ -14,6 +15,9 @@ func NewSimulationRepositoryImpl() *SimulationRepositoryImpl {
 }
 
 func (r *SimulationRepositoryImpl) Save(record entities.SimulationRecord) error {
+
+	fmt.Println(database.DB)
+
 	query := `
 	INSERT INTO simulations (
 		current_assets,
@@ -30,7 +34,22 @@ func (r *SimulationRepositoryImpl) Save(record entities.SimulationRecord) error 
 		real_rate_month,
 		total_contributed,
 		total_interest_earned
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	) VALUES (
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14
+)
 	`
 
 	_, err := database.DB.Exec(
