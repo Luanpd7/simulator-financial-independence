@@ -4,6 +4,8 @@ API REST desenvolvida em **Go (Golang)** responsável pelos cálculos financeiro
 
 A API recebe os dados financeiros informados pelo usuário, processa a simulação e retorna indicadores relacionados à evolução patrimonial e ao planejamento para aposentadoria.
 
+- **[Ver publicação no LinkedIn](https://www.linkedin.com/posts/luan-pereira-dias-a327a0253_conclu%C3%AD-mais-um-projeto-pessoal-com-o-activity-7478299174644506624-a626?utm_source=share&utm_medium=member_desktop&rcm=ACoAAD6WM8YBZpZBcOFJu9kQqXyrUpV5Vaoz8g4)**
+
 ## 🚀 Tecnologias
 
 - **Go (Golang):** utilizado para desenvolvimento da API e implementação dos cálculos financeiros.
