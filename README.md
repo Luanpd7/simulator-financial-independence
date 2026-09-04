@@ -11,6 +11,7 @@ A API recebe os dados financeiros informados pelo usuário, processa a simulaç�
 - **REST API:** utilizada para comunicação entre o back-end e o front-end Flutter.
 - **Clean Architecture:** utilizada para separar as responsabilidades entre as camadas da aplicação.
 - **Git / GitHub:** utilizados para controle de versão e gerenciamento do código.
+- **JIRA:** Para organização nas demandas.
 
 ## 📋 Funcionalidades
 
